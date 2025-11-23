@@ -1,0 +1,67 @@
+[
+  {
+    "model": "submissions.category",
+    "pk": 1,
+    "fields": {
+      "name_ar": "كهرباء",
+      "name_en": "Electricity"
+    }
+  },
+  {
+    "model": "submissions.category",
+    "pk": 2,
+    "fields": {
+      "name_ar": "مياه",
+      "name_en": "Water"
+    }
+  },
+  {
+    "model": "submissions.category",
+    "pk": 3,
+    "fields": {
+      "name_ar": "صرف صحي",
+      "name_en": "Sewage"
+    }
+  },
+  {
+    "model": "submissions.category",
+    "pk": 4,
+    "fields": {
+      "name_ar": "إنترنت",
+      "name_en": "Internet"
+    }
+  },
+  {
+    "model": "submissions.category",
+    "pk": 5,
+    "fields": {
+      "name_ar": "هاتف",
+      "name_en": "Phone"
+    }
+  },
+  {
+    "model": "submissions.category",
+    "pk": 6,
+    "fields": {
+      "name_ar": "طرق",
+      "name_en": "Roads"
+    }
+  },
+  {
+    "model": "submissions.category",
+    "pk": 7,
+    "fields": {
+      "name_ar": "إنارة",
+      "name_en": "Lighting"
+    }
+  },
+  {
+    "model": "submissions.category",
+    "pk": 8,
+    "fields": {
+      "name_ar": "أخرى",
+      "name_en": "Other"
+    }
+  }
+]
+

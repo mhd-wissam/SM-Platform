@@ -1,0 +1,417 @@
+{
+  "info": {
+    "name": "SM Platform API",
+    "description": "منصة التقديمات الاجتماعية - API Collection للاختبار",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "phone_number",
+                  "value": "+966501234567",
+                  "description": "رقم الهاتف مع رمز الدولة"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/send-otp/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "send-otp", ""]
+            },
+            "description": "إرسال كود OTP للرقم المحدد (في التطوير: 0000)"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "phone_number",
+                  "value": "+966501234567",
+                  "description": "رقم الهاتف المرسل له كود OTP"
+                },
+                {
+                  "key": "otp_code",
+                  "value": "000000",
+                  "description": "كود OTP (في التطوير: 000000)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/verify-otp/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "verify-otp", ""]
+            },
+            "description": "التحقق من كود OTP والحصول على JWT tokens",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "if (pm.response.code === 200) {",
+                    "    const response = pm.response.json();",
+                    "    if (response.tokens) {",
+                    "        pm.collectionVariables.set('access_token', response.tokens.access);",
+                    "        pm.collectionVariables.set('refresh_token', response.tokens.refresh);",
+                    "        console.log('Tokens saved successfully');",
+                    "    }",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "refresh",
+                  "value": "{{refresh_token}}",
+                  "description": "Refresh token للحصول على access token جديد"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/refresh-token/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "refresh-token", ""]
+            },
+            "description": "تحديث access token باستخدام refresh token",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "if (pm.response.code === 200) {",
+                    "    const response = pm.response.json();",
+                    "    if (response.access) {",
+                    "        pm.collectionVariables.set('access_token', response.access);",
+                    "        console.log('Access token refreshed');",
+                    "    }",
+                    "}"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ]
+          },
+          "response": []
+        },
+        {
+          "name": "User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile", ""]
+            },
+            "description": "الحصول على بيانات المستخدم الحالي"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories", ""]
+            },
+            "description": "الحصول على قائمة بجميع الفئات المتاحة"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Submissions",
+      "item": [
+        {
+          "name": "Get My Submissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/submissions/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "submissions", ""]
+            },
+            "description": "الحصول على قائمة بتقديمات المستخدم الحالي"
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Submission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "type": "text",
+                  "description": "معرف الفئة (احصل عليه من Get Categories)"
+                },
+                {
+                  "key": "image_url",
+                  "type": "file",
+                  "src": [],
+                  "description": "صورة التقديم - اختر ملف صورة"
+                },
+                {
+                  "key": "notes",
+                  "value": "تقديم تجريبي من Postman",
+                  "type": "text",
+                  "description": "ملاحظات إضافية (اختياري)"
+                },
+                {
+                  "key": "latitude",
+                  "value": "24.7136",
+                  "type": "text",
+                  "description": "خط العرض"
+                },
+                {
+                  "key": "longitude",
+                  "value": "46.6753",
+                  "type": "text",
+                  "description": "خط الطول"
+                },
+                {
+                  "key": "counter_number",
+                  "value": "12345",
+                  "type": "text",
+                  "description": "رقم العداد (اختياري)"
+                },
+                {
+                  "key": "consumption_number",
+                  "value": "1,234.56",
+                  "type": "text",
+                  "description": "رقم الاستهلاك - يمكن أن يحتوي على فواصل (اختياري)"
+                },
+                {
+                  "key": "invoice_image",
+                  "type": "file",
+                  "src": [],
+                  "description": "صورة الفاتورة - اختر ملف صورة (اختياري)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/submissions/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "submissions", ""]
+            },
+            "description": "إنشاء تقديم جديد"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Submission Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/submissions/{{submission_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "submissions", "{{submission_id}}"]
+            },
+            "description": "الحصول على تفاصيل تقديم محدد (استبدل {{submission_id}} بالمعرف)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Submission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image_url",
+                  "type": "file",
+                  "src": [],
+                  "description": "صورة التقديم - اختر ملف صورة (اختياري)"
+                },
+                {
+                  "key": "notes",
+                  "value": "تم تحديث التقديم من Postman",
+                  "type": "text",
+                  "description": "ملاحظات محدثة"
+                },
+                {
+                  "key": "latitude",
+                  "value": "24.7136",
+                  "type": "text",
+                  "description": "خط العرض المحدث"
+                },
+                {
+                  "key": "longitude",
+                  "value": "46.6753",
+                  "type": "text",
+                  "description": "خط الطول المحدث"
+                },
+                {
+                  "key": "counter_number",
+                  "value": "12345",
+                  "type": "text",
+                  "description": "رقم العداد (اختياري)"
+                },
+                {
+                  "key": "consumption_number",
+                  "value": "1,234.56",
+                  "type": "text",
+                  "description": "رقم الاستهلاك - يمكن أن يحتوي على فواصل (اختياري)"
+                },
+                {
+                  "key": "invoice_image",
+                  "type": "file",
+                  "src": [],
+                  "description": "صورة الفاتورة - اختر ملف صورة (اختياري)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/submissions/{{submission_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "submissions", "{{submission_id}}"]
+            },
+            "description": "تحديث تقديم موجود (استبدل {{submission_id}} بالمعرف)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Submission",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/submissions/{{submission_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "submissions", "{{submission_id}}"]
+            },
+            "description": "حذف تقديم (استبدل {{submission_id}} بالمعرف)"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string",
+      "description": "عنوان URL الأساسي للخادم"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string",
+      "description": "Access token للمصادقة"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string",
+      "description": "Refresh token لتجديد الوصول"
+    },
+    {
+      "key": "submission_id",
+      "value": "1",
+      "type": "string",
+      "description": "معرف التقديم للاختبار"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Pre-request script للمجموعة",
+          "console.log('SM Platform API Test Starting...');"
+        ]
+      }
+    }
+  ]
+}
