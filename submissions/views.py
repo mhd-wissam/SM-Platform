@@ -136,23 +136,23 @@ def verify_otp(request):
 
 
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 @parser_classes([FormParser, MultiPartParser])
 def refresh_token(request):
-    """Refresh JWT access token"""
+    """Refresh JWT access token - يعيد access token جديد فقط"""
     try:
-        refresh_token = request.data.get('refresh')
-        if not refresh_token:
+        refresh_token_value = request.data.get('refresh')
+        if not refresh_token_value:
             return Response({
                 'error': 'Refresh token مطلوب'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        refresh = RefreshToken(refresh_token)
+        refresh = RefreshToken(refresh_token_value)
         access_token = str(refresh.access_token)
 
+        # نعيد access token جديد فقط، refresh token يبقى كما هو
         return Response({
-            'access': access_token,
-            'refresh': str(refresh)
+            'access': access_token
         }, status=status.HTTP_200_OK)
 
     except Exception as e:
