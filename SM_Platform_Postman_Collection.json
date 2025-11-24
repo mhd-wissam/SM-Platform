@@ -189,9 +189,16 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/submissions/",
+              "raw": "{{base_url}}/api/submissions/?category_id=",
               "host": ["{{base_url}}"],
-              "path": ["api", "submissions", ""]
+              "path": ["api", "submissions", ""],
+              "query": [
+                {
+                  "key": "category_id",
+                  "value": "",
+                  "description": "معرف الفئة لتصفية النتائج (اختياري)"
+                }
+              ]
             },
             "description": "الحصول على قائمة بتقديمات المستخدم الحالي"
           },

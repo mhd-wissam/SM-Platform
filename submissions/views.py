@@ -37,7 +37,18 @@ class SubmissionListView(generics.ListCreateAPIView):
     parser_classes = [FormParser, MultiPartParser]
 
     def get_queryset(self):
-        return Submission.objects.filter(user=self.request.user)
+        """Return submissions for current user, optionally filtered by category."""
+        queryset = Submission.objects.filter(user=self.request.user)
+        category_id = self.request.query_params.get('category_id')
+
+        if category_id:
+            try:
+                queryset = queryset.filter(category__category_id=int(category_id))
+            except (ValueError, TypeError):
+                # إذا كان المعرف غير صالح نعيد نتيجة فارغة
+                queryset = queryset.none()
+
+        return queryset
 
     def get_serializer_class(self):
         if self.request.method == 'POST':

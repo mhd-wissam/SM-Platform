@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',  # CORS headers for Frontend access
     'rest_framework',
     'rest_framework_simplejwt',
     'submissions',
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware - يجب أن يكون في البداية
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -177,3 +179,42 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'user_id',
     'USER_ID_CLAIM': 'user_id',
 }
+
+# CORS Settings - للسماح للـ Frontend بالوصول إلى APIs
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React default port
+    "http://localhost:3001",
+    "http://localhost:5173",  # Vite default port
+    "http://localhost:8080",  # Vue default port
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+]
+
+# للسماح بجميع الـ origins في التطوير (غير آمن للإنتاج)
+# CORS_ALLOW_ALL_ORIGINS = True  # استخدم هذا فقط في التطوير
+
+# السماح بإرسال credentials (cookies, authorization headers)
+CORS_ALLOW_CREDENTIALS = True
+
+# السماح بـ Headers المطلوبة
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# Methods المسموح بها
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
