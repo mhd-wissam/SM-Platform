@@ -91,7 +91,7 @@ class Submission(models.Model):
     counter_number = models.CharField(max_length=50, blank=True, null=True, verbose_name="رقم العداد")
     consumption_number = models.CharField(max_length=50, blank=True, null=True, verbose_name="رقم الاستهلاك")
     invoice_image = models.ImageField(upload_to='invoices/', blank=True, null=True, verbose_name="صورة الفاتورة")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ الإنشاء")
+    created_at = models.DateTimeField(auto_now_add=False, verbose_name="تاريخ الإنشاء")
 
     class Meta:
         db_table = 'Submissions'

@@ -55,19 +55,51 @@ class SubmissionSerializer(serializers.ModelSerializer):
 class SubmissionCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating new submissions"""
     category_id = serializers.IntegerField(write_only=True)
+    created_at = serializers.DateTimeField(required=False, allow_null=True)
 
     class Meta:
         model = Submission
         fields = [
             'category_id', 'image_url', 'notes', 'latitude', 'longitude',
-            'counter_number', 'consumption_number', 'invoice_image'
+            'counter_number', 'consumption_number', 'invoice_image', 'created_at'
         ]
 
+    def validate_created_at(self, value):
+        """Validate that created_at is not in the future and not too old"""
+        if value:
+            from django.utils import timezone
+            now = timezone.now()
+            
+            # لا يمكن أن يكون الوقت في المستقبل
+            if value > now:
+                raise serializers.ValidationError("تاريخ الإنشاء لا يمكن أن يكون في المستقبل")
+            
+            # لا يمكن أن يكون أقدم من 30 يوم (لحماية من الأخطاء)
+            from datetime import timedelta
+            thirty_days_ago = now - timedelta(days=30)
+            if value < thirty_days_ago:
+                raise serializers.ValidationError("تاريخ الإنشاء لا يمكن أن يكون أقدم من 30 يوم")
+        
+        return value
+
     def create(self, validated_data):
+        from django.utils import timezone
+        
         category_id = validated_data.pop('category_id')
         user = self.context['request'].user
         category = Category.objects.get(category_id=category_id)
-        return Submission.objects.create(user=user, category=category, **validated_data)
+        
+        # إذا لم يتم إرسال created_at، استخدم الوقت الحالي
+        created_at = validated_data.pop('created_at', None)
+        if not created_at:
+            created_at = timezone.now()
+        
+        return Submission.objects.create(
+            user=user, 
+            category=category, 
+            created_at=created_at,
+            **validated_data
+        )
 
 
 # Authentication Serializers
